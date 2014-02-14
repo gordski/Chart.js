@@ -305,9 +305,9 @@ window.Chart = function(context, options){
 		if(window.pageXOffset > 0 || window.pageYOffset > 0) {
 			xPosition -= window.pageXOffset;
 			yPosition -= window.pageYOffset;
-		} else if(document.body.scrollLeft > 0 || document.body.scrollTop > 0) {
-			xPosition -= document.body.scrollLeft;
-			yPosition -= document.body.scrollTop;
+		} else if(document.documentElement.scrollLeft > 0 || document.documentElement.scrollTop > 0) {
+			xPosition -= document.documentElement.scrollLeft;
+			yPosition -= document.documentElement.scrollTop;
 		}
 		return { x: xPosition, y: yPosition };
 	}
