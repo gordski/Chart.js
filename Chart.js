@@ -291,8 +291,6 @@ window.Chart = function(context, options){
 	var width = context.canvas.width,
 		height = context.canvas.height;
 
-	this.savedState = null;
-
 	function getPosition(e) {
 		var xPosition = 0;
 		var yPosition = 0;
@@ -365,6 +363,9 @@ window.Chart = function(context, options){
 
 	this.PolarArea = function(data,options){
 	
+		this.savedState = null;
+		this.tooltips = [];
+
 		chart.PolarArea.defaults = {
 			scaleOverlay : true,
 			scaleOverride : false,
@@ -403,6 +404,9 @@ window.Chart = function(context, options){
 
 	this.Radar = function(data,options){
 	
+		this.savedState = null;
+		this.tooltips = [];
+
 		chart.Radar.defaults = {
 			scaleOverlay : false,
 			scaleOverride : false,
@@ -448,6 +452,10 @@ window.Chart = function(context, options){
 	};
 	
 	this.Pie = function(data,options){
+
+		this.savedState = null;
+		this.tooltips = [];
+
 		chart.Pie.defaults = {
 			segmentShowStroke : true,
 			segmentStrokeColor : "#fff",
@@ -473,6 +481,9 @@ window.Chart = function(context, options){
 	
 	this.Doughnut = function(data,options){
 	
+		this.savedState = null;
+		this.tooltips = [];
+
 		chart.Doughnut.defaults = {
 			segmentShowStroke : true,
 			segmentStrokeColor : "#fff",
@@ -495,6 +506,9 @@ window.Chart = function(context, options){
 
 	this.Line = function(data,options){
 	
+		this.savedState = null;
+		this.tooltips = [];
+
 		chart.Line.defaults = {
 			scaleOverlay : false,
 			scaleOverride : false,
@@ -531,6 +545,10 @@ window.Chart = function(context, options){
 	}
 	
 	this.Bar = function(data,options){
+
+		this.savedState = null;
+		this.tooltips = [];
+
 		chart.Bar.defaults = {
 			scaleOverlay : false,
 			scaleOverride : false,
