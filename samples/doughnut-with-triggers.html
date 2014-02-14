@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Doughnut Chart</title>
+		<script src="../Chart.js"></script>
+		<meta name = "viewport" content = "initial-scale = 1, user-scalable = no">
+		<style>
+			canvas{
+			}
+			body {
+				background-color: black;
+				font-family: sans-serif;
+			}
+
+			div#swatch {
+				background-color: black;
+				
+				width: 100px;
+				height: 100px;
+			}
+
+			td {
+				vertical-align: top;
+			}
+		</style>
+	</head>
+	<body>
+		<table>
+			<tr>
+				<td><canvas id="canvas" height="450px" width="450px"></canvas></td>
+				<td><div id="swatch"></div></td>
+			</tr>
+		</table>
+
+
+	<script>
+
+		function toolTipEvent(data) {
+			document.getElementById("swatch").style.background = data.color;
+		}
+
+		var hideEventData = 
+			{
+				color : "#000000"
+			}
+
+		var doughnutData = [
+				{
+					value: 30,
+					color:"#F7464A",
+					toolTipEvent : toolTipEvent,
+					toolTipShowEventData :
+						{
+							color : "#F7464A"
+						},
+					toolTipHideEventData : hideEventData
+				},
+				{
+					value : 50,
+					color : "#46BFBD",
+					toolTipEvent : toolTipEvent,
+					toolTipShowEventData :
+						{
+							color : "#46BFBD"
+						},
+					toolTipHideEventData : hideEventData
+				},
+				{
+					value : 100,
+					color : "#FDB45C",
+					toolTipEvent : toolTipEvent,
+					toolTipShowEventData :
+						{
+							color : "#FDB45C"
+						},
+					toolTipHideEventData : hideEventData
+				},
+				{
+					value : 40,
+					color : "#949FB1",
+					toolTipEvent : toolTipEvent,
+					toolTipShowEventData :
+						{
+							color : "#949FB1"
+						},
+					toolTipHideEventData : hideEventData
+				},
+				{
+					value : 120,
+					color : "#4D5360",
+					toolTipEvent : toolTipEvent,
+					toolTipShowEventData :
+						{
+							color : "#4D5360"
+						},
+					toolTipHideEventData : hideEventData
+				}
+			
+			];
+
+	var myDoughnut = new Chart(document.getElementById("canvas").getContext("2d")).Doughnut(doughnutData);
+	
+	</script>
+	</body>
+</html>

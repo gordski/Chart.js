@@ -197,6 +197,7 @@ window.Chart = function(context, options){
 		this.highlightState = null;
 		this.x = null;
 		this.y = null;
+		this.triggered = false;
 
 		this.inRange = function(x,y) {
 			if(this.areaObj.type) {
@@ -310,21 +311,53 @@ window.Chart = function(context, options){
 		return { x: xPosition, y: yPosition };
 	}
 	
+	function createTrigger(trigger,data) {
+		return function() { trigger(data); }
+	}
+
 	function tooltipEventHandler(e) {
 		if(chart.tooltips.length > 0) {
 			chart.savedState = chart.savedState == null ? context.getImageData(0,0,context.canvas.width,context.canvas.height) : chart.savedState;
 			var rendered = 0;
+			var triggerOn = [];
+			var triggerOff = [];
 			for(var i in chart.tooltips) {
 				var position = getPosition(context.canvas),
 					mx = (e.clientX)-position.x,
 					my = (e.clientY)-position.y;
 				if(chart.tooltips[i].inRange(mx,my)) {
 					chart.tooltips[i].render(mx,my);
+					if(!chart.tooltips[i].triggered) {
+						chart.tooltips[i].triggered = true;
+						if(typeof chart.tooltips[i].data.trigger == "function"){
+							var trigger = chart.tooltips[i].data.trigger;
+							var data = chart.tooltips[i].data.triggerOnData;
+							triggerOn.push(createTrigger(trigger,data));
+						}
+					}
 					rendered++;
+				} else {
+					if(chart.tooltips[i].triggered) {
+						chart.tooltips[i].triggered = false;
+						if(typeof chart.tooltips[i].data.trigger == "function"){
+							var trigger = chart.tooltips[i].data.trigger;
+							var data = chart.tooltips[i].data.triggerOffData;
+							triggerOff.push(createTrigger(trigger,data));
+						}
+					}
 				}
 			}
+
 			if(rendered == 0) {
 				context.putImageData(chart.savedState,0,0);
+			}
+
+			for(var j=0; j<triggerOff.length; j++){
+				triggerOff[j]();
+			}
+
+			for(var j=0; j<triggerOn.length; j++){
+				triggerOn[j]();
 			}
 		}
 	}
@@ -348,6 +381,16 @@ window.Chart = function(context, options){
 	context.canvas.onmouseout = function(e) {
 		if(chart.savedState != null) {
 			context.putImageData(chart.savedState,0,0);
+
+			for(var i in chart.tooltips) {
+				var tt = chart.tooltips[i];
+				if(tt.triggered) {
+					tt.triggered = false;
+					if(typeof tt.data.trigger == "function") {
+						tt.data.trigger(tt.data.triggerOffData);
+					}
+				}
+			}
 		}
 	}
 
@@ -697,7 +740,7 @@ window.Chart = function(context, options){
 					for(var p = 0; p <= pAmount; p++) {
 						points.push({x:width/2+radius*Math.cos(startAngle+p/pAmount*rotateAnimation*angleStep),y:height/2+radius*Math.sin(startAngle+p/pAmount*rotateAnimation*angleStep)});
 					}
-					registerTooltip(ctx,{type:'shape',points:points},{label:data[i].label,value:data[i].value},'PolarArea');
+					registerTooltip(ctx,{type:'shape',points:points},{label:data[i].label,value:data[i].value,trigger:data[i].toolTipEvent, triggerOnData:data[i].toolTipShowEventData, triggerOffData:data[i].toolTipHideEventData},'PolarArea');
 				}
 
 				if(config.segmentShowStroke){
@@ -778,7 +821,7 @@ window.Chart = function(context, options){
 						curY = height/2+offset*Math.sin(0-Math.PI/2),
 						pointRadius = config.pointDot ? config.pointDotRadius+config.pointDotStrokeWidth : 10,
 						ttData = data.labels[0].trim() != "" ? data.labels[0]+": "+data.datasets[i].data[0] : data.datasets[i].data[0];
-					registerTooltip(ctx,{type:'circle',x:curX,y:curY,r:pointRadius},{label:data.labels[0],value:data.datasets[i].data[0]},'Radar');
+					registerTooltip(ctx,{type:'circle',x:curX,y:curY,r:pointRadius},{label:data.labels[0],value:data.datasets[i].data[0],trigger:data.datasets[i].toolTipEvent, triggerOnData:data.datasets[i].toolTipShowEventData, triggerOffData:data.datasets[i].toolTipHideEventData},'Radar');
 				}
 				for (var j=1; j<data.datasets[i].data.length; j++){
 					offset = calculateOffset(data.datasets[i].data[j],calculatedScale,scaleHop);
@@ -789,7 +832,7 @@ window.Chart = function(context, options){
 							curY = height/2+offset*Math.sin(j*rotationDegree-Math.PI/2),
 							pointRadius = config.pointDot ? config.pointDotRadius+config.pointDotStrokeWidth : 10,
 							ttData = data.labels[j].trim() != "" ? data.labels[j]+": "+data.datasets[i].data[j] : data.datasets[i].data[j];
-						registerTooltip(ctx,{type:'circle',x:curX,y:curY,r:pointRadius},{label:data.labels[j],value:data.datasets[i].data[j]},'Radar');
+						registerTooltip(ctx,{type:'circle',x:curX,y:curY,r:pointRadius},{label:data.labels[j],value:data.datasets[i].data[j],trigger:data.datasets[i].toolTipEvent, triggerOnData:data.datasets[i].toolTipShowEventData, triggerOffData:data.datasets[i].toolTipHideEventData},'Radar');
 					}
 				}
 				ctx.closePath();
@@ -1036,7 +1079,7 @@ window.Chart = function(context, options){
 					for(var p = 0; p <= pAmount; p++) {
 						points.push({x:width/2+pieRadius*Math.cos(cumulativeAngle+p/pAmount*segmentAngle),y:height/2+pieRadius*Math.sin(cumulativeAngle+p/pAmount*segmentAngle)});
 					}
-					registerTooltip(ctx,{type:'shape',points:points},{label:data[i].label,value:data[i].value},'Pie');
+					registerTooltip(ctx,{type:'shape',points:points},{label:data[i].label,value:data[i].value, trigger:data[i].toolTipEvent, triggerOnData:data[i].toolTipShowEventData, triggerOffData:data[i].toolTipHideEventData},'Pie');
 				}
 				
 				if(config.segmentShowStroke){
@@ -1097,7 +1140,7 @@ window.Chart = function(context, options){
 					for(var p = pAmount; p >= 0; p--) {
 						points.push({x:width/2+cutoutRadius*Math.cos(cumulativeAngle+p/pAmount*segmentAngle),y:height/2+cutoutRadius*Math.sin(cumulativeAngle+p/pAmount*segmentAngle)});
 					}
-					registerTooltip(ctx,{type:'shape',points:points},{label:data[i].label,value:data[i].value},'Doughnut');
+					registerTooltip(ctx,{type:'shape',points:points},{label:data[i].label,value:data[i].value,trigger:data[i].toolTipEvent, triggerOnData:data[i].toolTipShowEventData, triggerOffData:data[i].toolTipHideEventData},'Doughnut');
 				}
 				
 				if(config.segmentShowStroke){
@@ -1158,7 +1201,7 @@ window.Chart = function(context, options){
 				for(var j = 0; j < data.datasets[i].data.length; j++) {
 					if(animPc >= 1 && config.showTooltips) {
 						// register tooltips
-						registerTooltip(ctx,{type:'circle',x:xPos(j),y:yPos(i,j),r:pointRadius},{label:data.labels[j],value:data.datasets[i].data[j]},'Line');
+						registerTooltip(ctx,{type:'circle',x:xPos(j),y:yPos(i,j),r:pointRadius},{label:data.labels[j],value:data.datasets[i].data[j],trigger:data.datasets[i].toolTipEvent, triggerOnData:data.datasets[i].toolTipShowEventData, triggerOffData:data.datasets[i].toolTipHideEventData},'Line');
 					}
 				}
 				ctx.stroke();
@@ -1403,7 +1446,7 @@ window.Chart = function(context, options){
 							height = calculateOffset(data.datasets[i].data[j],calculatedScale,scaleHop),
 							y = xAxisPosY-height,
 							width = barWidth;
-						registerTooltip(ctx,{type:'rect',x:x,y:y,width:width,height:height},{label:data.labels[j],value:data.datasets[i].data[j]},'Bar');
+						registerTooltip(ctx,{type:'rect',x:x,y:y,width:width,height:height},{label:data.labels[j],value:data.datasets[i].data[j],trigger:data.datasets[i].toolTipEvent, triggerOnData:data.datasets[i].toolTipShowEventData, triggerOffData:data.datasets[i].toolTipHideEventData},'Bar');
 					}
 				}
 			}

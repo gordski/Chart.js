@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Pie Chart</title>
+		<script src="../Chart.js"></script>
+		<meta name = "viewport" content = "initial-scale = 1, user-scalable = no">
+		<style>
+			canvas{
+			}
+
+			body {
+				background-color: black;
+				font-family: sans-serif;
+			}
+
+			div#details {
+				color: lightgrey;
+				
+				background-color: grey;
+				
+				width: 250px;
+				height: 250px;
+
+				padding-top: 10px;
+				padding-left: 10px;
+				padding-bottom: 10px;
+				padding-right: 10px;
+			}
+
+			td {
+				vertical-align: top;
+			}
+		</style>
+	</head>
+	<body>
+		<table>
+			<tr>
+				<td><canvas id="canvas" height="450px" width="450px"></canvas></td>
+				<td><div id="details"><h2 id="details_header"></h2><div id="details_definition"></div></div></td>
+			</tr>
+		</table>
+
+
+	<script>
+
+		function toolTipEvent(data) {
+			document.getElementById("details_header").innerHTML = data.header;
+			document.getElementById("details_definition").innerHTML = data.definition;
+		}
+
+		var hideEventData = {
+			header : "",
+			definition : ""
+		}
+
+		var pieData = [
+				{
+					value : 30,
+					color : "#F38630",
+					label : 'Sleep',
+					labelColor : 'white',
+					labelFontSize : '10',
+					labelAlign : 'left',
+					toolTipEvent : toolTipEvent,
+					toolTipShowEventData :
+						{
+							header : "Sleep",
+							definition : "<p>a condition of body and mind which typically recurs for several hours every night, in which the nervous system is inactive, the eyes closed, the postural muscles relaxed, and consciousness practically suspended:</p><p><em>'I was on the verge of sleep'</em></p><p>'he talked in his sleep'</p>"
+						},
+					toolTipHideEventData : hideEventData
+				},
+				{
+					value : 50,
+					color : "#E0E4CC",
+					label : 'Music',
+					labelColor : '#444',
+					labelFontSize : '1.4em',
+					labelAlign: 'center',
+					toolTipEvent : toolTipEvent,
+					toolTipShowEventData :
+						{
+							header : "Music",
+							definition : "<p>vocal or instrumental sounds (or both) combined in such a way as to produce beauty of form, harmony, and expression of emotion:</p><p><em>'couples were dancing to the music'</em></p><p><em>'baroque music'</em></p>"
+						},
+					toolTipHideEventData : hideEventData
+				},
+				{
+					value : 100,
+					color : "#69D2E7",
+					label : 'Work',
+					labelColor : 'rgb(0,0,0)',
+					labelFontSize : '175%',
+					toolTipEvent : toolTipEvent,
+					toolTipShowEventData :
+						{
+							header : "Work",
+							definition : "<p>activity involving mental or physical effort done in order to achieve a result:</p><p><em>'he was tired after a day's work in the fields'</em></p>"
+						},
+					toolTipHideEventData : hideEventData
+				}
+			];
+
+	var myChart = new Chart(document.getElementById("canvas").getContext("2d"));
+	var myPie = myChart.Pie(pieData, {
+	});
+	
+	</script>
+	</body>
+</html>
